@@ -1,3 +1,4 @@
+//Definindo as dependências do projeto
 var express = require('express')
 var path = require('path')
 var cookieParser = require('cookie-parser')
@@ -5,9 +6,18 @@ var logger = require('morgan')
 var cors = require('cors')
 var helmet = require('helmet')
 var bodyParser = require('body-parser')
-var axios = require('axios')
 var router = express.Router()
+var mysql = require('mysql2')
 
+//Definindo o banco de dados
+var dataBase = mysql.createConnection({
+  host: 'localhost',
+  user: 'lucasvscs',
+  database: 'gratidao-sorteador',
+  password: 'nenhuma456'
+})
+
+//Definindo as rottas
 var indexRouter = require('./routes/index')
 var usersRouter = require('./routes/users')
 

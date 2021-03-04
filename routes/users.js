@@ -3,12 +3,14 @@ var router = express.Router()
 var userController = require('../controllers/userController')
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-  axios
-    .get('https://www.instagram.com/p/CLvcI94ntYm/?__a=1')
-    .then(function (response) {
-      console.log(response)
-    })
+//router.get('/getUsers', userController.getUsers)
+
+router.get('/getUsers', (req, res) => {
+  var db = req.dataBase
+
+  db.query('SELECT * FROM `users`', (error, results, fields) => {
+    res.send(results)
+  })
 })
 
 module.exports = router
