@@ -1,4 +1,7 @@
 //Definindo as dependências do projeto
+
+require('dotenv-safe').config()
+const jwt = require('jsonwebtoken')
 var express = require('express')
 var path = require('path')
 var cookieParser = require('cookie-parser')
@@ -7,15 +10,6 @@ var cors = require('cors')
 var helmet = require('helmet')
 var bodyParser = require('body-parser')
 var router = express.Router()
-var mysql = require('mysql2')
-
-//Definindo o banco de dados
-var dataBase = mysql.createConnection({
-  host: 'localhost',
-  user: 'lucasvscs',
-  database: 'gratidao-sorteador',
-  password: 'nenhuma456'
-})
 
 //Definindo as rottas
 var indexRouter = require('./routes/index')
@@ -25,7 +19,6 @@ var app = express()
 
 app.use(logger('dev'))
 app.use(helmet())
-app.use(bodyParser.json())
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
