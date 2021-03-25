@@ -11,7 +11,7 @@ const getHashedPassword = password => {
 module.exports.getUsers = callback => {
   connection.query(
     'SELECT users.id, users.name, users.user_type, user_giveaway_details.beginning_period, user_giveaway_details.end_period, user_giveaway_details.giveaway_permission FROM users inner join user_giveaway_details WHERE users.id = user_giveaway_details.user_id;',
-    (error, results, fields) => {
+    (error, results) => {
       if (error) {
         console.log(error)
       } else {
@@ -21,7 +21,8 @@ module.exports.getUsers = callback => {
   )
 }
 
-module.exports.addUser = async (newUser, callback) => {
+module.exports.addUser = (newUser, callback) => {
+  // TODO: FAZER O CHECK SE O USUÁRIO JÁ FOI REGISTRADO
   //Armazenando o retorno da requisição na nova variável
   newUser = newUser.body
 
@@ -32,70 +33,66 @@ module.exports.addUser = async (newUser, callback) => {
   })
   password = getHashedPassword(password)
 
-  // Check if user with the same email is also registered.
+  let userId
 
-  // Iniciando a conexão com o BD e a transaction do mysql
-  connection.getConnection((err, conn) => {
+  // Iniciando a conexão com o BD
+  connection.getConnection((error, conn) => {
+    // Iniciando a transaction do mysql
     conn.beginTransaction(err => {
-      // Função para inserir a primeira parte do usuário no banco
-      conn.query(
-        'INSERT INTO users (name, user_type) VALUES (?, ?)',
-        [newUser.name, newUser.user_type],
-        (error, results, fields) => {
-          if (error) {
-            return conn.rollback(() => {
-              connection.releaseConnection(conn)
-              throw error
-            })
-          } else {
-            // Função para inserir a segunda parte do usuário no banco
-            conn.query(
-              'INSERT INTO user_login_details (email, password, user_id) VALUES (?, ?, ?)',
-              [newUser.email, password, results.insertId],
-              (error, result, fields) => {
-                if (error) {
-                  return conn.rollback(() => {
-                    connection.releaseConnection(conn)
-                    callback(error, null)
-                  })
+      try {
+        // Função para inserir a primeira parte do usuário no banco
+        conn.query(
+          'INSERT INTO users (name) VALUES (?)',
+          [newUser.name],
+          (error, results) => {
+            userId = results.insertId
+            if (error) {
+              conn.rollback()
+              callback({ message: 'Erro no sistema' }, null)
+            } else {
+              // Função para inserir a segunda parte do usuário no banco
+              conn.query(
+                'INSERT INTO user_login_details (email, password, user_type, user_id) VALUES (?, ?, ?)',
+                [newUser.email, password, newUser.user_type, userId],
+                (error, results) => {
+                  if (error) {
+                    conn.rollback()
+                    callback({ message: 'Erro no sistema' }, null)
+                  } else {
+                    // Função para inserir a terceira parte do usuário no banco
+                    conn.query(
+                      'INSERT INTO user_giveaway_details (beginning_period, end_period, giveaway_permission, user_id) VALUES (?, ?, ?, ?)',
+                      [
+                        newUser.beginning_period,
+                        newUser.end_period,
+                        newUser.giveaway_permission,
+                        userId
+                      ],
+                      (error, results) => {
+                        if (error) {
+                          0
+                          conn.rollback()
+                          callback({ message: 'Erro no sistema' }, null)
+                        } else {
+                          conn.commit()
+                          callback(null, {
+                            message: 'Sucesso ao cadastrar usuário'
+                          })
+                        }
+                      }
+                    )
+                  }
                 }
-              }
-            )
-
-            // Função para inserir a terceira parte do usuário no banco
-            conn.query(
-              'INSERT INTO user_giveaway_details (beginning_period, end_period, giveaway_permission, user_id) VALUES (?, ?, ?, ?)',
-              [
-                newUser.beginning_period,
-                newUser.end_period,
-                newUser.giveaway_permission,
-                results.insertId
-              ],
-              (error, result, fields) => {
-                if (error) {
-                  return conn.rollback(() => {
-                    connection.releaseConnection(conn)
-                    callback(error, null)
-                  })
-                }
-              }
-            )
-
-            // Comitando as alterações do usuário no banco de dados
-            conn.commit(err => {
-              if (err) {
-                return conn.rollback(() => {
-                  connection.releaseConnection(conn)
-                  callback(error, null)
-                })
-              } else {
-                connection.releaseConnection(conn)
-                callback(null, { message: 'Usuário cadastrado com sucesso' })
-              }
-            })
+              )
+            }
           }
-        }
-      )
+        )
+      } catch (err) {
+        conn.rollback()
+        callback({ message: 'Erro no sistema' }, null)
+      } finally {
+        connection.releaseConnection(conn)
+      }
     })
   })
 }
@@ -109,7 +106,7 @@ module.exports.editUserGiveawayData = (userData, callback) => {
       userData.giveaway_permission,
       userData.id
     ],
-    (error, results, fields) => {
+    (error, results) => {
       if (error) {
         throw error
       } else {
@@ -123,7 +120,7 @@ module.exports.editUserPassword = (userData, callback) => {
   connection.query(
     'UPDATE user_login_details SET password = ? WHERE user_id = ?',
     [userData.password, userData.id],
-    (error, results, fields) => {
+    (error, results) => {
       if (error) {
         throw error
       } else {
@@ -134,16 +131,20 @@ module.exports.editUserPassword = (userData, callback) => {
 }
 
 module.exports.verifyCredentials = (credentialsData, callback) => {
-  let password = getHashedPassword(credentialsData.userPassword)
+  let password = getHashedPassword(credentialsData.body.userPassword)
 
   connection.query(
     'SELECT * FROM `gratidao-sorteador`.user_login_details WHERE email = ? and password = ?',
-    [credentialsData.userEmail, password],
-    (error, results, fields) => {
+    [credentialsData.body.userEmail, password],
+    (error, results) => {
       if (error) {
         throw error
       } else {
-        callback(null, results)
+        if (results.length) {
+          callback(null, results)
+        } else {
+          callback({ message: 'Nenhum usuário encontrado' }, null)
+        }
       }
     }
   )

@@ -1,7 +1,5 @@
 //Definindo as dependências do projeto
-
 require('dotenv-safe').config()
-const jwt = require('jsonwebtoken')
 var express = require('express')
 var path = require('path')
 var cookieParser = require('cookie-parser')
@@ -15,6 +13,7 @@ var router = express.Router()
 var indexRouter = require('./routes/index')
 var usersRouter = require('./routes/users')
 
+//Definindo o express
 var app = express()
 
 app.use(logger('dev'))
