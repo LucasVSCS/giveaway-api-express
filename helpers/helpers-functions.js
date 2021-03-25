@@ -1,13 +1,13 @@
 const jwt = require('jsonwebtoken')
 
 function verifyJWT (req, res, next) {
-  const token = req.headers['x-access-token']
+  const token = req.cookies.token
 
   if (!token) {
     return res.status(401).json({ auth: false, message: 'No token provided.' })
   }
 
-  jwt.verify(token.proccess.env.SECRET, (err, decoded) => {
+  jwt.verify(token, process.env.SECRET, (err, decoded) => {
     if (err) {
       return res
         .status(500)
@@ -16,9 +16,10 @@ function verifyJWT (req, res, next) {
 
     // se tudo estiver ok, salva no request para uso posterior
     req.userId = decoded.userId
+    console.log(req.userId)
     req.userType = decoded.userType
     next()
   })
 }
 
-exports.verifyJWT
+module.exports = verifyJWT

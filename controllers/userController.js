@@ -43,7 +43,7 @@ const userController = {
           // Setando o JWT
           const token = jwt.sign({ userId, userType }, process.env.SECRET)
 
-          res.json({ auth: true, token: token })
+          res.cookie('token', token, { httpOnly: true }).sendStatus(200)
         }
       } catch (error) {
         res.status(500).send(error)

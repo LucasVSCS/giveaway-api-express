@@ -52,12 +52,13 @@ module.exports.addUser = (newUser, callback) => {
             } else {
               // Função para inserir a segunda parte do usuário no banco
               conn.query(
-                'INSERT INTO user_login_details (email, password, user_type, user_id) VALUES (?, ?, ?)',
+                'INSERT INTO user_login_details (email, password, user_type, user_id) VALUES (?, ?, ?, ?)',
                 [newUser.email, password, newUser.user_type, userId],
                 (error, results) => {
                   if (error) {
+                    console.log(newUser.user_type)
                     conn.rollback()
-                    callback({ message: 'Erro no sistema' }, null)
+                    callback({ message: error }, null)
                   } else {
                     // Função para inserir a terceira parte do usuário no banco
                     conn.query(

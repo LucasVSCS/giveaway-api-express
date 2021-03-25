@@ -9,6 +9,6 @@ router.post('/logout', userController.userLogout)
 
 // Rotas de gerenciamento de usuários
 router.get('/getUsers', verifyJWT, userController.getUsers)
-router.post('/addUser', userController.addUser)
+router.post('/addUser', verifyJWT, userController.addUser)
 
 module.exports = router
