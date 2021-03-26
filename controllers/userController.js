@@ -37,8 +37,8 @@ const userController = {
           res.status(500).send(err)
         } else if (data) {
           // Retornando o ID do usuário e seu tipo
-          const userId = data.user_id
-          const userType = data.user_type
+          const userId = data[0].user_id
+          const userType = data[0].user_type
 
           // Setando o JWT
           const token = jwt.sign({ userId, userType }, process.env.SECRET)
@@ -53,7 +53,8 @@ const userController = {
 
   userLogout (req, res) {
     res.json({ auth: false, token: null })
-  }
+  },
+  forgotPassword (req, res) {}
 }
 
 module.exports = userController

@@ -16,8 +16,8 @@ function verifyJWT (req, res, next) {
 
     // se tudo estiver ok, salva no request para uso posterior
     req.userId = decoded.userId
-    console.log(req.userId)
     req.userType = decoded.userType
+
     next()
   })
 }

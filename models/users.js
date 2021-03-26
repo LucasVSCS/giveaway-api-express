@@ -10,7 +10,7 @@ const getHashedPassword = password => {
 
 module.exports.getUsers = callback => {
   connection.query(
-    'SELECT users.id, users.name, users.user_type, user_giveaway_details.beginning_period, user_giveaway_details.end_period, user_giveaway_details.giveaway_permission FROM users inner join user_giveaway_details WHERE users.id = user_giveaway_details.user_id;',
+    'SELECT users.id, users.name, user_giveaway_details.beginning_period, user_giveaway_details.end_period, user_giveaway_details.giveaway_permission FROM users inner join user_giveaway_details WHERE users.id = user_giveaway_details.user_id;',
     (error, results) => {
       if (error) {
         console.log(error)
