@@ -10,8 +10,8 @@ var bodyParser = require('body-parser')
 var router = express.Router()
 
 //Definindo as rottas
-var indexRouter = require('./routes/index')
 var usersRouter = require('./routes/users')
+var giveawayRouter = require('./routes/giveaways')
 
 //Definindo o express
 var app = express()
@@ -26,9 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', indexRouter)
 app.use('/users', usersRouter)
+app.use('/giveaways', giveawayRouter)
 
 module.exports = router
-
-/* USAR O DOTENV */
 
 module.exports = app
