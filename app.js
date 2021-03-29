@@ -16,15 +16,20 @@ var giveawayRouter = require('./routes/giveaways')
 //Definindo o express
 var app = express()
 
+let corsOptions = {
+  origin: 'http://localhost:3000',
+  methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
+  credentials: true
+}
+
 app.use(logger('dev'))
 app.use(helmet())
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', indexRouter)
 app.use('/users', usersRouter)
 app.use('/giveaways', giveawayRouter)
 
