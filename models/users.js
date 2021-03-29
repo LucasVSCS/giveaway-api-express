@@ -10,7 +10,7 @@ const getHashedPassword = password => {
 
 module.exports.getUsers = callback => {
   connection.query(
-    'SELECT users.id, users.name, user_giveaway_details.beginning_period, user_giveaway_details.end_period, user_giveaway_details.giveaway_permission FROM users inner join user_giveaway_details WHERE users.id = user_giveaway_details.user_id;',
+    'SELECT users.id, users.name, date_format(user_giveaway_details.beginning_period, "%d/%m/%Y") as beginning_period, date_format(user_giveaway_details.end_period, "%d/%m/%Y") as end_period, CASE WHEN user_giveaway_details.giveaway_permission = "S" THEN "Sim" ELSE "Não" END AS giveaway_permission, CASE WHEN user_login_details.user_type = "A" THEN "Administrador" ELSE "Comum" END as user_type FROM users INNER JOIN user_giveaway_details ON users.id = user_giveaway_details.user_id INNER JOIN user_login_details ON users.id = user_login_details.user_id;',
     (error, results) => {
       if (error) {
         console.log(error)

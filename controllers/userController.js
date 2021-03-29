@@ -52,7 +52,7 @@ const userController = {
   },
 
   userLogout (req, res) {
-    res.json({ auth: false, token: null })
+    res.clearCookie('token').sendStatus(200)
   },
   forgotPassword (req, res) {}
 }

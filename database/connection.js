@@ -6,9 +6,11 @@ const dataBase = mysql.createPool({
   user: 'lucasvscs',
   database: 'gratidao-sorteador',
   password: process.env.DB_PASSWORD,
+  timezone: '-03:00',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  dateStrings: ['DATE', 'DATETIME']
 })
 
 module.exports = dataBase
