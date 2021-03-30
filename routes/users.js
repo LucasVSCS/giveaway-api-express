@@ -6,6 +6,7 @@ const verifyJWT = require('../helpers/verify-token')
 // Rotas de gerenciamento de credenciais
 router.post('/verifyCredentials', userController.verifyCredentials)
 router.get('/logout', userController.userLogout)
+router.post('/verifyJWT', userController.verifyUserSession)
 /****** FAZER 
 router.post('/forgotPassword', userController.forgotPassword)
 router.post('/editUser', userController.editUser)

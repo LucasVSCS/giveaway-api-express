@@ -54,7 +54,28 @@ const userController = {
   userLogout (req, res) {
     res.clearCookie('token').sendStatus(200)
   },
-  forgotPassword (req, res) {}
+  forgotPassword (req, res) {
+    // Placeholder pra fazer dps a parte de esqueci minha senha
+  },
+  verifyUserSession (req, res) {
+    if (req.cookies.token) {
+      jwt.verify(req.cookies.token, process.env.SECRET, (err, decoded) => {
+        if (err) {
+          return res
+            .status(500)
+            .json({ auth: false, message: 'Failed to authenticate token.' })
+        }
+
+        res.json({
+          auth: true,
+          userId: decoded.userId,
+          userType: decoded.userType
+        })
+      })
+    }
+
+    res.status(401).send({ message: 'Usuário não autorizado' })
+  }
 }
 
 module.exports = userController
