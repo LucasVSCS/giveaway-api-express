@@ -17,7 +17,7 @@ var giveawayRouter = require('./routes/giveaways')
 var app = express()
 
 let corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: 'http://127.0.0.1:3000',
   methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
   credentials: true
 }
