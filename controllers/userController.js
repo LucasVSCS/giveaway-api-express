@@ -39,11 +39,17 @@ const userController = {
           // Retornando o ID do usuário e seu tipo
           const userId = data[0].user_id
           const userType = data[0].user_type
+          let userData
 
           // Setando o JWT
           const token = jwt.sign({ userId, userType }, process.env.SECRET)
 
-          res.cookie('token', token, { httpOnly: true }).sendStatus(200)
+          //res.cookie('token', token, { httpOnly: true }).sendStatus(200)
+
+          res
+            .status(200)
+            .cookie('token', token)
+            .json({ token: token })
         }
       } catch (error) {
         res.status(500).send(error)
