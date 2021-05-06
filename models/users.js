@@ -71,7 +71,6 @@ module.exports.addUser = (newUser, callback) => {
                       ],
                       (error, results) => {
                         if (error) {
-                          0
                           conn.rollback()
                           callback({ message: 'Erro no sistema' }, null)
                         } else {
