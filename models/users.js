@@ -1,5 +1,6 @@
 const connection = require('../database/connection')
 const generator = require('generate-password')
+const moment = require('moment')
 const crypto = require('crypto')
 
 const getHashedPassword = password => {
@@ -35,6 +36,8 @@ module.exports.addUser = (newUser, callback) => {
 
   let userId
 
+  let beginningPeriod = moment(newUser.beginning_period).format('YYYY-MM-DD')
+  let endPeriod = moment(newUser.end_period).format('YYYY-MM-DD')
   // Iniciando a conexão com o BD
   connection.getConnection((error, conn) => {
     // Iniciando a transaction do mysql
@@ -64,14 +67,13 @@ module.exports.addUser = (newUser, callback) => {
                     conn.query(
                       'INSERT INTO user_giveaway_details (beginning_period, end_period, giveaway_permission, user_id) VALUES (?, ?, ?, ?)',
                       [
-                        newUser.beginning_period,
-                        newUser.end_period,
+                        beginningPeriod,
+                        endPeriod,
                         newUser.giveaway_permission,
                         userId
                       ],
                       (error, results) => {
                         if (error) {
-                          0
                           conn.rollback()
                           callback({ message: 'Erro no sistema' }, null)
                         } else {
