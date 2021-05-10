@@ -2,6 +2,7 @@ const connection = require('../database/connection')
 const generator = require('generate-password')
 const moment = require('moment')
 const crypto = require('crypto')
+const mailController = require('../helpers/send-mail')
 
 const getHashedPassword = password => {
   const sha256 = crypto.createHash('sha256')
@@ -28,11 +29,11 @@ module.exports.addUser = (newUser, callback) => {
   newUser = newUser.body
 
   // Gerando uma nova senha para o usuário e armazenando em uma variável
-  let password = generator.generate({
+  const originalPassword = generator.generate({
     length: 10,
     numbers: true
   })
-  password = getHashedPassword(password)
+  const password = getHashedPassword(originalPassword)
 
   let userId
 
@@ -59,7 +60,6 @@ module.exports.addUser = (newUser, callback) => {
                 [newUser.email, password, newUser.user_type, userId],
                 (error, results) => {
                   if (error) {
-                    console.log(newUser.user_type)
                     conn.rollback()
                     callback({ message: error }, null)
                   } else {
@@ -77,6 +77,7 @@ module.exports.addUser = (newUser, callback) => {
                           conn.rollback()
                           callback({ message: 'Erro no sistema' }, null)
                         } else {
+                          mailController.sendEmail(newUser.email, originalPassword)
                           conn.commit()
                           callback(null, {
                             message: 'Sucesso ao cadastrar usuário'
