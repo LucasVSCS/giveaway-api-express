@@ -81,6 +81,36 @@ const userController = {
     }
 
     res.status(401).send({ message: 'Usuário não autorizado' })
+  },
+  changePassword (req, res) {
+    if (req.cookies.token) {
+      jwt.verify(req.cookies.token, process.env.SECRET, (err, decoded) => {
+        if (err) {
+          return res
+            .status(500)
+            .json({ auth: false, message: 'Failed to authenticate token.' })
+        }
+
+        const userData = {
+          userId: decoded.userId,
+          password: req.body.password
+        }
+
+        userModel.editUserPassword(userData, (err, data) => {
+          try {
+            if (err) {
+              res.status(500).send(err)
+            } else if (data) {
+              res.send(data)
+            }
+          } catch (error) {
+            res.status(500).send(error)
+          }
+        })
+      })
+    } else {
+      res.status(401).send({ message: 'Usuário não autorizado' })
+    }
   }
 }
 

@@ -77,7 +77,10 @@ module.exports.addUser = (newUser, callback) => {
                           conn.rollback()
                           callback({ message: 'Erro no sistema' }, null)
                         } else {
-                          mailController.sendEmail(newUser.email, originalPassword)
+                          mailController.sendEmail(
+                            newUser.email,
+                            originalPassword
+                          )
                           conn.commit()
                           callback(null, {
                             message: 'Sucesso ao cadastrar usuário'
@@ -121,9 +124,11 @@ module.exports.editUserGiveawayData = (userData, callback) => {
 }
 
 module.exports.editUserPassword = (userData, callback) => {
+  let password = getHashedPassword(userData.password)
+
   connection.query(
     'UPDATE user_login_details SET password = ? WHERE user_id = ?',
-    [userData.password, userData.id],
+    [password, userData.userId],
     (error, results) => {
       if (error) {
         throw error
