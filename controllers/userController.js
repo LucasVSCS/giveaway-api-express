@@ -15,7 +15,6 @@ const userController = {
       }
     })
   },
-
   addUser (req, res) {
     userModel.addUser(req, (err, data) => {
       try {
@@ -29,7 +28,19 @@ const userController = {
       }
     })
   },
-
+  deleteUser (req, res) {
+    userModel.deleteUser(req, (err, data) => {
+      try {
+        if (err) {
+          res.status(500).send(err)
+        } else if (data) {
+          res.send(data)
+        }
+      } catch (error) {
+        res.status(500).send(error)
+      }
+    })
+  },
   verifyCredentials (req, res) {
     userModel.verifyCredentials(req, (err, data) => {
       try {
@@ -56,7 +67,6 @@ const userController = {
       }
     })
   },
-
   userLogout (req, res) {
     res.clearCookie('token').sendStatus(200)
   },

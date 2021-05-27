@@ -158,3 +158,54 @@ module.exports.verifyCredentials = (credentialsData, callback) => {
     }
   )
 }
+
+module.exports.deleteUser = (userId, callback) => {
+  connection.getConnection((error, conn) => {
+    conn.beginTransaction(err => {
+      try {
+        conn.query(
+          'DELETE FROM `gratidao-sorteador`.user_giveaway_details WHERE user_id = ?',
+          [userId.body.userId],
+          (error, results) => {
+            if (error) {
+              conn.rollback()
+              callback({ message: error }, null)
+            } else {
+              conn.query(
+                'DELETE FROM `gratidao-sorteador`.user_login_details WHERE user_id = ?',
+                [userId.body.userId],
+                (error, results) => {
+                  if (error) {
+                    conn.rollback()
+                    callback({ message: error }, null)
+                  } else {
+                    conn.query(
+                      'DELETE FROM `gratidao-sorteador`.users WHERE id = ?',
+                      [userId.body.userId],
+                      (error, results) => {
+                        if (error) {
+                          conn.rollback()
+                          callback({ message: 'Erro no sistema' }, null)
+                        } else {
+                          conn.commit()
+                          callback(null, {
+                            message: 'Sucesso ao deletar o usuário'
+                          })
+                        }
+                      }
+                    )
+                  }
+                }
+              )
+            }
+          }
+        )
+      } catch (err) {
+        conn.rollback()
+        callback({ message: 'Erro no sistema' }, null)
+      } finally {
+        connection.releaseConnection(conn)
+      }
+    })
+  })
+}

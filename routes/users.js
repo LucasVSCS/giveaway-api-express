@@ -16,5 +16,6 @@ router.post('/editUser', userController.editUser)
 // Rotas de gerenciamento de usuários
 router.get('/getUsers', verifyJWT, userController.getUsers)
 router.post('/addUser', verifyJWT, userController.addUser)
+router.post('/deleteUser', verifyJWT, userController.deleteUser)
 
 module.exports = router
