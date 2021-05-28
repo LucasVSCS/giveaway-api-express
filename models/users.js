@@ -3,6 +3,7 @@ const generator = require('generate-password')
 const moment = require('moment')
 const crypto = require('crypto')
 const mailController = require('../helpers/send-mail')
+const occurrenceModel = require('./occurrences')
 
 const getHashedPassword = password => {
   const sha256 = crypto.createHash('sha256')
@@ -17,6 +18,7 @@ module.exports.getUsers = callback => {
       if (error) {
         console.log(error)
       } else {
+        occurrenceModel.addOccurrence({ description: 'Testesteste', userId: 7 })
         callback(null, results)
       }
     }

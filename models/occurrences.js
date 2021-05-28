@@ -12,3 +12,17 @@ module.exports.getOccurrences = callback => {
     }
   )
 }
+
+module.exports.addOccurrence = occurenceData => {
+  connection.query(
+    'INSERT INTO occurrences (description, occurrence_date, user_id) VALUES (?, NOW(), ?)',
+    [occurenceData.description, occurenceData.userId],
+    (error, results) => {
+      if (error) {
+        throw error
+      } else {
+        return true
+      }
+    }
+  )
+}
