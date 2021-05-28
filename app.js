@@ -12,6 +12,7 @@ var router = express.Router()
 //Definindo as rottas
 var usersRouter = require('./routes/users')
 var giveawayRouter = require('./routes/giveaways')
+var occurrencesRouter = require('./routes/occurrences')
 
 //Definindo o express
 var app = express()
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/users', usersRouter)
 app.use('/giveaways', giveawayRouter)
+app.use('/occurrences', occurrencesRouter)
 
 module.exports = router
 
